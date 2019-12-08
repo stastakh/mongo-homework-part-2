@@ -25,7 +25,7 @@ app.use((err, req, res, next) => {
   if (err.name === 'CastError') {
     res.status(404).send(err.message);
   } else {
-    res.status(500).send(err.message);
+    res.status(err.status || 500).send(err.message);
   }
 });
 

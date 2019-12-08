@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
 
-const userSchema = Joi.object().keys({
+const createUserSchema = Joi.object().keys({
   firstName: Joi.string()
     .min(4)
     .max(50)
@@ -15,4 +15,20 @@ const userSchema = Joi.object().keys({
     .max(15)
 });
 
-module.exports = userSchema;
+const updateUserSchema = Joi.object().keys({
+  firstName: Joi.string()
+    .min(4)
+    .max(50),
+  lastName: Joi.string()
+    .min(3)
+    .max(60),
+  role: Joi.string().valid('admin', 'writer', 'guest'),
+  nickname: Joi.string()
+    .min(2)
+    .max(15)
+});
+
+module.exports = {
+  createUserSchema,
+  updateUserSchema
+};
