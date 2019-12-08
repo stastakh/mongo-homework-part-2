@@ -1,7 +1,7 @@
 const articleModel = require('../models/article');
 const userModel = require('../models/user');
 
-module.exports = { createArticle, updateArticle, getArticles };
+module.exports = { createArticle, updateArticle, getArticles, deleteArticle };
 
 async function createArticle(req, res, next) {
   const { body } = req;
@@ -41,6 +41,21 @@ async function getArticles(req, res, next) {
   try {
     const articles = await articleModel.find(query).populate('owner');
     res.json(articles);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteArticle(req, res, next) {
+  const { params } = req;
+  try {
+    const article = await articleModel.findOne({ _id: params.id });
+    const deleteInfo = await articleModel.deleteOne({ _id: params.id });
+    await userModel.updateOne(
+      { _id: article.owner },
+      { $inc: { numberOfArticles: -1 } }
+    );
+    res.json(deleteInfo);
   } catch (err) {
     next(err);
   }

@@ -17,7 +17,10 @@ async function updateUser(req, res, next) {
   try {
     // check if user exists
     await userModel.findOne({ _id: params.id });
-    const updateInfo = await userModel.updateOne({ _id: params.id }, body);
+    const updateInfo = await userModel.updateOne(
+      { _id: params.id },
+      { ...body, updatedAt: Date.now() }
+    );
     res.json(updateInfo);
   } catch (err) {
     next(err);
