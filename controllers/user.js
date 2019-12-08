@@ -15,6 +15,8 @@ async function createUser(req, res, next) {
 async function updateUser(req, res, next) {
   const { body, params } = req;
   try {
+    // check if user exists
+    await userModel.findOne({ _id: params.id });
     const updateInfo = await userModel.updateOne({ _id: params.id }, body);
     res.json(updateInfo);
   } catch (err) {

@@ -5,4 +5,6 @@ const articleController = require('../controllers/article');
 
 router.post('/', articleController.createArticle);
 
+router.put('/:id', articleController.updateArticle);
+
 module.exports = router;

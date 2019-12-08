@@ -21,7 +21,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/api', api);
 
 app.use((err, req, res, next) => {
-  res.status(err.status || 500).send(err.message);
+  console.log(err);
+  if (err.name === 'CastError') {
+    res.status(404).send(err.message);
+  } else {
+    res.status(500).send(err.message);
+  }
 });
 
 const port = 4040;
