@@ -1,7 +1,7 @@
 const articleModel = require('../models/article');
 const userModel = require('../models/user');
 
-module.exports = { createArticle, updateArticle };
+module.exports = { createArticle, updateArticle, getArticles };
 
 async function createArticle(req, res, next) {
   const { body } = req;
@@ -10,7 +10,10 @@ async function createArticle(req, res, next) {
     await userModel.findOne({ _id: body.owner });
     const createdArticle = await articleModel.create(body);
     // increment number of articles
-    await userModel.updateOne({ _id: user._id }, { $inc: { numberOfArticles: 1 } });
+    await userModel.updateOne(
+      { _id: body.owner },
+      { $inc: { numberOfArticles: 1 } }
+    );
     res.json(createdArticle);
   } catch (err) {
     next(err);
@@ -23,8 +26,21 @@ async function updateArticle(req, res, next) {
     // check if article and user exist
     await articleModel.findOne({ _id: params.id });
     await userModel.findOne({ _id: body.owner });
-    const updatedInfo = await articleModel.updateOne({ _id: params.id }, body);
+    const updatedInfo = await articleModel.updateOne(
+      { _id: params.id },
+      { ...body, updatedAt: Date.now() }
+    );
     res.json(updatedInfo);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getArticles(req, res, next) {
+  const { query } = req;
+  try {
+    const articles = await articleModel.find(query).populate('owner');
+    res.json(articles);
   } catch (err) {
     next(err);
   }
