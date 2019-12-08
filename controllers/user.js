@@ -1,6 +1,8 @@
 const userModel = require('../models/user');
 const articleModel = require('../models/article');
 
+const validation = require('../validation/user');
+
 module.exports = {
   createUser,
   updateUser,
@@ -12,8 +14,21 @@ module.exports = {
 async function createUser(req, res, next) {
   const { body } = req;
   try {
-    const createdUser = await userModel.create(body);
-    res.json(createdUser);
+    // check validation
+    const { error, value } = validation.createUserSchema.validate(body);
+    if (!error) {
+      const newUser = new userModel({
+        ...value
+      });
+      const createdUser = await userModel.create(newUser);
+      res.json(createdUser);
+    } else {
+      const err = {
+        status: 400,
+        message: error.details[0].message
+      };
+      throw err;
+    }
   } catch (err) {
     next(err);
   }
@@ -22,13 +37,21 @@ async function createUser(req, res, next) {
 async function updateUser(req, res, next) {
   const { body, params } = req;
   try {
-    // check if user exists
-    await userModel.findOne({ _id: params.id });
-    const updateInfo = await userModel.updateOne(
-      { _id: params.id },
-      { ...body, updatedAt: Date.now() }
-    );
-    res.json(updateInfo);
+    // check validation
+    const { error, value } = validation.updateUserSchema.validate(body);
+    if (!error) {
+      // check if user exists
+      await userModel.findOne({ _id: params.id });
+      // update user
+      const updateInfo = await userModel.updateOne({ _id: params.id }, { ...value });
+      res.json(updateInfo);
+    } else {
+      const err = {
+        status: 400,
+        message: error.details[0].message
+      };
+      throw err;
+    }
   } catch (err) {
     next(err);
   }
