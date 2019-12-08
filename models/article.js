@@ -11,6 +11,7 @@ const ArticleSchema = new Schema({
   updatedAt: { type: Date, default: Date.now(), required: true }
 });
 
+mongoose.set('useCreateIndex', true);
 ArticleSchema.path('title').index({ text: true });
 
 module.exports = mongoose.model('Article', ArticleSchema);

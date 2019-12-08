@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const dev_db_url = 'mongodb://localhost/Local2';
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
-mongoose.connect(mongoDB);
+mongoose.connect(mongoDB, { useUnifiedTopology: true, useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 
 const db = mongoose.connection;
